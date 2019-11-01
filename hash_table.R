@@ -1,5 +1,3 @@
-
-'''
 library(hash)
 hash_table_sparse_matrix=function(i,j,value,dime){
   index=paste(as.character(i),as.character(j),sep=",")
@@ -29,7 +27,6 @@ plus=function(h1,h2){
   .set(h3,posi1,value)
   return (h3)
 }
-'''
   
   
   
