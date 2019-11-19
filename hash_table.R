@@ -23,7 +23,10 @@ plus=function(h1,h2){
   posi1=h1[["posi"]]$posi
   posi2=h2[["posi"]]$posi
   h3=copy(h2)
-  value=ifelse(has.key(posi1,h2),values(h1,posi1)+values(h2,posi1[rep(1,length(posi1))]),values(h1,posi1))
+  haskey=has.key(posi1,h2)
+  value=values(h1,posi1)
+  pos=which(haskey)
+  value[pos]=value[pos]+values(h2,posi1[pos])
   .set(h3,posi1,value)
   return (h3)
 }
