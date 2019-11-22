@@ -66,7 +66,7 @@ def multiply(h1,h2):
     jj=[]
     value=[]
     dims=[h1["dims"][0],h2["dims"][1]]
-     for i in h1["r"]:
+    for i in h1["r"]:
         key=h1["r"+str(i)].keys()
         jjj=[]
         value2=[]
@@ -86,12 +86,21 @@ def multiply(h1,h2):
                 if jjj[j][k] not in jj[-1]:
                     jj[-1].append(jjj[j][k])
                     value[-1].append(value2[j][k])
+                    ii[-1].append(i)
                 else:
                     value[-1][jj[-1].index(jjj[j][k])]=value[jj[-1].index(jjj[j][k])]+value2[j][k]
-            
+    ii1=[]
+    jj1=[]
+    value1=[]
+    for i in ii:
+        ii1=ii1+i
+    for i in jj:
+        jj1=jj1+i
+    for i in value:
+        value1=value1+i
 
         
-    h3=hash_matrix(ii,jj,value,dims)
+    h3=hash_matrix(ii1,jj1,value1,dims)
     return h3
     
 
@@ -110,9 +119,12 @@ def main():
     h1=hash_matrix(i,j,value,dims)
     print("**")
     t_start=time.time()
-    h3=plus(h1,h1)
+    h3=multiply(h1,h1)
     t_end=time.time()
     print(t_end-t_start)
+    '''h=hash_matrix(i=[1,2,3,4],j=[5,6,7,8],value=[9,10,11,12],dims=[10,10])
+    h1=hash_matrix(i=[5,5,5,8],j=[1,2,3,4],value=[9,10,11,12],dims=[10,10])
+    print(multiply(h,h1))'''
     return 0
 
 main()
