@@ -92,13 +92,9 @@ def multiply(h1,h2):
     ii1=[]
     jj1=[]
     value1=[]
-    for i in ii:
-        ii1=ii1+i
-    for i in jj:
-        jj1=jj1+i
-    for i in value:
-        value1=value1+i
-
+    [ii1.extend(i) for i in ii]
+    [jj1.extend(i) for i in jj]
+    [value1.extend(i) for i in value]
         
     h3=hash_matrix(ii1,jj1,value1,dims)
     return h3
