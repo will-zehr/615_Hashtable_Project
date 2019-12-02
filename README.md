@@ -29,3 +29,16 @@ h_R=hash_table_sparse_matrix(i=i,j=j,value=x,dime=dime)
 
 h_py=hash_matrix(i=i,j=j,value=x,dime=dime)
 ```
+
+## Testing time efficiency across a range of k values
+```R
+k_sample=c(1e4,5e4,1e5,5e5,1e6,1e7)
+sapply(k_sample, function(m){
+  i=sample(1:k_full,m)
+  j=sample(1:k_full, m)
+  x=rnorm(m)
+  dime=c(k_full,k_full)
+  h=hash_table_sparse_matrix(i=i,j=j,value=x,dime=dime)
+  return(system.time(multiply_hash(h,h)))}
+)
+```
