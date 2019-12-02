@@ -32,6 +32,7 @@ h_py=hash_matrix(i=i,j=j,value=x,dime=dime)
 
 ## Testing time efficiency across a range of k values
 ```R
+k_full=10000000
 k_sample=c(1e4,5e4,1e5,5e5,1e6,1e7)
 sapply(k_sample, function(m){
   i=sample(1:k_full,m)
