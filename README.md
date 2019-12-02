@@ -40,6 +40,7 @@ sapply(k_sample, function(m){
   x=rnorm(m)
   dime=c(k_full,k_full)
   h=hash_table_sparse_matrix(i=i,j=j,value=x,dime=dime)
-  return(system.time(multiply_hash(h,h)))}
+  return(system.time(multiply_hash(h,h)))
+  }
 )
 ```
