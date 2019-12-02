@@ -10,6 +10,7 @@ def hash_matrix(i,j,value,dims):
     h["posi"]=[0 for k in range(len(i))]
     h["r"]=i_set
     h["c"]=j_set
+    h["val"]=value
     for k in range(len(i)):
         ind=str(i[k])+","+str(j[k])
         h[ind]=value[k]
@@ -123,4 +124,4 @@ def main():
     print(multiply(h,h1))'''
     return 0
 
-main()
+#main()
