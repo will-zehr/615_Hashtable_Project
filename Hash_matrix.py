@@ -1,3 +1,5 @@
+import time
+import copy
 import random
 import numpy as np
 def hash_matrix(i,j,value,dims):
@@ -5,17 +7,17 @@ def hash_matrix(i,j,value,dims):
     j_set=list(set(j))
     h=dict()
     h["dims"]=dims
-    
+    h["r"]=dict()
     i_sort_ind=np.argsort(i)
     ite=-1
     for k in i_sort_ind:
         if (ite!=i[k]):
             ite=i[k]
             ind=i[k]
-            h[ind]=dict()
-            h[ind][j[k]]=value[k]
+            h["r"][ind]=dict()
+            h["r"][ind][j[k]]=value[k]
         else:
-            h[ind][j[k]]=value[k]
+            h["r"][ind][j[k]]=value[k]
     return h
 
 def plus(h1,h2):
@@ -45,22 +47,22 @@ def plus(h1,h2):
 def multiply(h1,h2):
     h3=dict()
     h3["dims"]=[h1["dims"][0],h2["dims"][1]]
-    r1=list(h1.keys())
-    r1=r1[1:]
+    h3["r"]=dict()
+    r1=list(h1["r"].keys())
     for i in r1:
-        key=h1[i].keys()
+        key=h1["r"][i].keys()
         for j in key:
-            if j in h2:
-                key2=h2[j].keys()
+            if j in h2["r"]:
+                key2=h2["r"][j].keys()
                 for k in key2:
-                    if(i in h3):
-                        if(k in h3[i]):
-                            h3[i][k]=h3[i][k]+h1[i][j]*h2[j][k]
+                    if(i in h3["r"]):
+                        if(k in h3["r"][i]):
+                            h3["r"][i][k]=h3["r"][i][k]+h1["r"][i][j]*h2["r"][j][k]
                         else:
-                            h3[i][k]=h1[i][j]*h2[j][k]
+                            h3["r"][i][k]=h1["r"][i][j]*h2["r"][j][k]
                     else:
-                        h3[i]=dict()
-                        h3[i][k]=h1[i][j]*h2[j][k]
+                        h3["r"][i]=dict()
+                        h3["r"][i][k]=h1["r"][i][j]*h2["r"][j][k]
     return h3
     
 
@@ -75,8 +77,14 @@ def main():
     t2=time.time()
     h3=multiply(h1,h1)
     t3=time.time()
+    r=h1.keys()
+    t4=time.time()
+    d=h1["dims"]
+    t5=time.time()
     print(t2-t1)
     print(t3-t2)
+    print(t4-t3)
+    print(t5-t4)
     '''h=hash_matrix(i=[1,2,3,4],j=[5,6,7,8],value=[9,10,11,12],dims=[10,10])
     h1=hash_matrix(i=[5,5,5,8],j=[1,2,3,4],value=[9,10,11,12],dims=[10,10])
     print(multiply(h,h1))'''
