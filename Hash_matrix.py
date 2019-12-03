@@ -1,5 +1,3 @@
-import time
-import copy
 import random
 import numpy as np
 def hash_matrix(i,j,value,dims):
@@ -7,35 +5,17 @@ def hash_matrix(i,j,value,dims):
     j_set=list(set(j))
     h=dict()
     h["dims"]=dims
-    h["posi"]=[0 for k in range(len(i))]
-    h["r"]=i_set
-    h["c"]=j_set
-    h["val"]=value
-    for k in range(len(i)):
-        ind=str(i[k])+","+str(j[k])
-        h[ind]=value[k]
-        h["posi"][k]=ind
-
+    
     i_sort_ind=np.argsort(i)
     ite=-1
     for k in i_sort_ind:
         if (ite!=i[k]):
             ite=i[k]
-            ind="r"+str(i[k])
+            ind=i[k]
             h[ind]=dict()
             h[ind][j[k]]=value[k]
         else:
             h[ind][j[k]]=value[k]
-    j_sort_ind=np.argsort(j)
-    ite=-1
-    for k in j_sort_ind:
-        if (ite!=j[k]):
-            ite=j[k]
-            ind="c"+str(j[k])
-            h[ind]=dict()
-            h[ind][i[k]]=value[k]
-        else:
-            h[ind][i[k]]=value[k]
     return h
 
 def plus(h1,h2):
@@ -63,65 +43,43 @@ def plus(h1,h2):
     return h3
 
 def multiply(h1,h2):
-    ii=[]
-    jj=[]
-    value=[]
-    dims=[h1["dims"][0],h2["dims"][1]]
-    for i in h1["r"]:
-        key=h1["r"+str(i)].keys()
-        jjj=[]
-        value2=[]
+    h3=dict()
+    h3["dims"]=[h1["dims"][0],h2["dims"][1]]
+    r1=list(h1.keys())
+    r1=r1[1:]
+    for i in r1:
+        key=h1[i].keys()
         for j in key:
-            if "r"+str(j) in h2:
-                jjj.append([])
-                value2.append([])
-                key2=h2["r"+str(j)].keys()
+            if j in h2:
+                key2=h2[j].keys()
                 for k in key2:
-                    jjj[-1].append(k)
-                    value2[-1].append(h1[str(i)+","+str(j)]*h2[str(j)+","+str(k)])
-        jj.append([])
-        ii.append([])
-        value.append([])
-        for j in range(len(jjj)):
-            for k in range(len(jjj[j])):
-                if jjj[j][k] not in jj[-1]:
-                    jj[-1].append(jjj[j][k])
-                    value[-1].append(value2[j][k])
-                    ii[-1].append(i)
-                else:
-                    value[-1][jj[-1].index(jjj[j][k])]=value[jj[-1].index(jjj[j][k])]+value2[j][k]
-    ii1=[]
-    jj1=[]
-    value1=[]
-    [ii1.extend(i) for i in ii]
-    [jj1.extend(i) for i in jj]
-    [value1.extend(i) for i in value]
-        
-    h3=hash_matrix(ii1,jj1,value1,dims)
+                    if(i in h3):
+                        if(k in h3[i]):
+                            h3[i][k]=h3[i][k]+h1[i][j]*h2[j][k]
+                        else:
+                            h3[i][k]=h1[i][j]*h2[j][k]
+                    else:
+                        h3[i]=dict()
+                        h3[i][k]=h1[i][j]*h2[j][k]
     return h3
     
 
 def main():
-    print(1)
-    base=[i for i in range(1,10000000)]
-    print(2)
-    i=random.sample(base,1000000)
-    print(3)
-    j=random.sample(base,1000000)
-    print(4)
+    i=np.random.choice(range(1,10000000),1000000,replace=True)
+    j=np.random.choice(range(1,10000000),1000000,replace=True)
     value=np.random.normal(0,1,1000000)
-    print(5)
     dims=[10000000,10000000]
-    print("*")
+    print("sample done")
+    t1=time.time()
     h1=hash_matrix(i,j,value,dims)
-    print("**")
-    t_start=time.time()
+    t2=time.time()
     h3=multiply(h1,h1)
-    t_end=time.time()
-    print(t_end-t_start)
+    t3=time.time()
+    print(t2-t1)
+    print(t3-t2)
     '''h=hash_matrix(i=[1,2,3,4],j=[5,6,7,8],value=[9,10,11,12],dims=[10,10])
     h1=hash_matrix(i=[5,5,5,8],j=[1,2,3,4],value=[9,10,11,12],dims=[10,10])
     print(multiply(h,h1))'''
     return 0
 
-#main()
+main()
