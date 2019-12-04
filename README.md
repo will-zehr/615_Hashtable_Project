@@ -45,7 +45,7 @@ R --slave --args 1e8 sample_sizes.txt < hash_table.R
 
 Outputs 2 tables: hash_times.tsv and sparse_times.tsv
 
-### step 3: parse & plot output files
+#### step 3: parse & plot output files
 ```R
 hashdf<-read.table('hash_times.tsv',header=T)
 sparsedf<-read.table('sparse_times.tsv')
