@@ -7,20 +7,20 @@ def hash_matrix(i,j,value,dims):
     j_set=list(set(j))
     h=dict()
     h["dims"]=dims
-    h["r"]=dict()
     i_sort_ind=np.argsort(i)
     ite=-1
     for k in i_sort_ind:
         if (ite!=i[k]):
             ite=i[k]
             ind=i[k]
-            h["r"][ind]=dict()
-            h["r"][ind][j[k]]=value[k]
+            h[ind]=dict()
+            h[ind][j[k]]=value[k]
         else:
-            h["r"][ind][j[k]]=value[k]
+            h[ind][j[k]]=value[k]
     return h
 
 def plus(h1,h2):
+    print("#")
     h3=copy.deepcopy(h2)
     posi1=h1["posi"]
     posi2=h2["posi"]
@@ -44,32 +44,33 @@ def plus(h1,h2):
             h3["c"+spl[1]][int(spl[0])]=h1[k]
     return h3
 
+
 def multiply(h1,h2):
     h3=dict()
     h3["dims"]=[h1["dims"][0],h2["dims"][1]]
-    h3["r"]=dict()
-    r1=list(h1["r"].keys())
+    r1=list(h1.keys())
+    r1.pop(r1.index("dims"))
     for i in r1:
-        key=h1["r"][i].keys()
+        key=h1[i].keys()
         for j in key:
-            if j in h2["r"]:
-                key2=h2["r"][j].keys()
+            if j in h2:
+                key2=h2[j].keys()
                 for k in key2:
-                    if(i in h3["r"]):
-                        if(k in h3["r"][i]):
-                            h3["r"][i][k]=h3["r"][i][k]+h1["r"][i][j]*h2["r"][j][k]
+                    if(i in h3):
+                        if(k in h3[i]):
+                            h3[i][k]=h3[i][k]+h1[i][j]*h2[j][k]
                         else:
-                            h3["r"][i][k]=h1["r"][i][j]*h2["r"][j][k]
+                            h3[i][k]=h1[i][j]*h2[j][k]
                     else:
-                        h3["r"][i]=dict()
-                        h3["r"][i][k]=h1["r"][i][j]*h2["r"][j][k]
+                        h3[i]=dict()
+                        h3[i][k]=h1[i][j]*h2[j][k]
     return h3
     
 
 def main():
-    i=np.random.choice(range(1,10000000),1000000,replace=True)
-    j=np.random.choice(range(1,10000000),1000000,replace=True)
-    value=np.random.normal(0,1,1000000)
+    i=np.random.choice(range(1,10000000),100000,replace=True)
+    j=np.random.choice(range(1,10000000),100000,replace=True)
+    value=np.random.normal(0,1,100000)
     dims=[10000000,10000000]
     print("sample done")
     t1=time.time()
@@ -90,4 +91,4 @@ def main():
     print(multiply(h,h1))'''
     return 0
 
-main()
+#main()
