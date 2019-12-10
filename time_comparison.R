@@ -40,7 +40,7 @@ plus=function(h1,h2){
 }
 
 
-multiply_hash=function(h1,h2, convert_to_r=FALSE){
+multiply_hash=function(h1,h2, convert_to_r=FALSE){ #h1 = h2
   h1=hash_matrix(i=h1$i$i, j=h1$j$j, value=h1$value$value, dims=h1$dime$dime)
   h2=hash_matrix(i=h2$i$i, j=h2$j$j, value=h2$value$value, dims=h2$dime$dime)
   h_mult=multiply(h1,h2)
@@ -67,13 +67,31 @@ hash_py_to_r=function(h){
   return(h)
 }
 
-#argument used to generate sample sizes (# nonzero elements in each test case):
-#cat(seq(1e1,1e6, by=10000), file='sample_sizes.txt')           
+# i=sample(1:10,5)
+# j=sample(1:10,5)
+# x=rnorm(5,mean=3,sd=7)
+# dime=c(10,10)
+# 
+# h=hash_table_sparse_matrix(i=i,j=j,value=x,dime=dime)
+# h_mult=multiply_hash(h,h,convert_to_r=T)
+# h_mult
+
 
 args=commandArgs(trailingOnly=T)
+#cat(seq(1e1,1e6, by=10000), file='sample_sizes.txt')
+#cat(seq(10,5e5+10, by=10000), file='sample_sizes_2.txt')
 k_full=as.numeric(args[1])
 k_sample=as.numeric(scan(args[2]))
-
+#k_full=1e1
+#k_sample=10
+#m=k_sample
+#k_sample=c(5e3,1e4)
+#k_sample=seq(3e3,1e4, by=1000)
+#k_sample=seq(3e3,6e3, by=1000)
+#k_sample=c(1e5)
+#memory size
+ 
+#k_sample=1e2
 i=sample(1:k_full,max(k_sample))
 j=sample(1:k_full,max(k_sample))
 x=rnorm(max(k_sample))
@@ -102,40 +120,52 @@ sparse_time=function(m){
 
 
 
-cat('\t-----------------\n')
-cat('\tRandom running\n')
-cat('\t-----------------\n')
+cat('-----------------\n')
+cat('Random running\n')
+cat('-----------------\n')
 hash_times_random=sapply(k_sample, hash_time)
 cat('hash done\n')
 sparse_times_random=sapply(k_sample, sparse_time)
 cat('sparse done\n')
 
+colnames(hash_times_random)=k_sample
+colnames(sparse_times_random)=k_sample
+
+write.table(hash_times_random, file='hash_times_random.tsv', sep='\t')
+write.table(sparse_times_random, file='sparse_times_random.tsv', sep='\t')
+
+cat('random tables written\n')
 
 
-
-
-cat('\t-----------------\n')
-cat('\tDiagonal running\n')
-cat('\t-----------------\n')
+cat('-----------------\n')
+cat('Diagonal running\n')
+cat('-----------------\n')
 
 i=sample(1:k_full,max(k_sample))
 j=k_full-i
-i=i+round(rnorm(k_sample,0,500))
-j=j+round(rnorm(k_sample,0,500))
-i[i<0]<-0
-j[j<0]<-0
+i=i+round(rnorm(max(k_sample),0,500))
+j=j+round(rnorm(max(k_sample),0,500))
+i[i>=k_full]<-k_full-1
+j[j>=k_full]<-k_full-1
+i[i<0]<-1
+j[j<0]<-1
 
 hash_times_diag=sapply(k_sample, hash_time)
 cat('hash done\n')
 sparse_times_diag=sapply(k_sample, sparse_time)
 cat('sparse done\n')
 
+colnames(hash_times_diag)=k_sample
+colnames(sparse_times_diag)=k_sample
+
+write.table(hash_times_diag, file='hash_times_diag.tsv', sep='\t')
+write.table(sparse_times_diag, file='sparse_times_diag.tsv', sep='\t')
+cat('diagonal tables written\n')
 
 
-
-cat('\t-----------------\n')
-cat('\tSquare in the middle running\n')
-cat('\t-----------------\n')
+cat('----------------------------\n')
+cat('Square in the middle running\n')
+cat('----------------------------\n')
 
 i=round(rnorm(max(k_sample),mean=k_full/2, sd=1e3))
 j=round(rnorm(max(k_sample),mean=k_full/2, sd=1e3))
@@ -147,22 +177,16 @@ cat('sparse done\n')
 
 
 
-
-cat('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
-cat('!!!!!!!Done! Writing Tables!!!!!!!!\n')
-cat('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
-
-colnames(hash_times_random)=k_sample
-colnames(sparse_times_random)=k_sample
-colnames(hash_times_diag)=k_sample
-colnames(sparse_times_diag)=k_sample
 colnames(hash_times_square)=k_sample
 colnames(sparse_times_square)=k_sample
 
-write.table(hash_times_random, file='hash_times_random.tsv', sep='\t')
-write.table(sparse_times_random, file='sparse_times_random.tsv', sep='\t')
-write.table(hash_times_diag, file='hash_times_diag.tsv', sep='\t')
-write.table(sparse_times_diag, file='sparse_times_diag.tsv', sep='\t')
 write.table(hash_times_square, file='hash_times_square.tsv', sep='\t')
 write.table(sparse_times_square, file='sparse_times_square.tsv', sep='\t')
-cat('Tables Written\n')
+cat('square tables written\n')
+
+
+
+
+cat('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
+cat('!!!!!!!!!!!!!!!!Done!!!!!!!!!!!!!!!\n')
+cat('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
