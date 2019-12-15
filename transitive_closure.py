@@ -1,9 +1,6 @@
-import time
 import copy
-import random
 import numpy as np
-import sys
-def hash_matrix(i,j,dims):
+def hash_matrix_tc(i,j,dims):
     i_set=list(set(i))
     j_set=list(set(j))
     h=dict()
@@ -22,7 +19,7 @@ def hash_matrix(i,j,dims):
 
 
 
-def multiply(h1,h2):
+def multiply_tc(h1,h2):
     h3=dict()
     h3["dims"]=[h1["dims"][0],h2["dims"][1]]
     r1=list(h1.keys())
@@ -45,7 +42,7 @@ def multiply(h1,h2):
     
 def transitive_closure(adj):
     while True:
-        adj1=multiply(adj,adj)
+        adj1=multiply_tc(adj,adj)
         if adj==adj1:
             break
         else:
