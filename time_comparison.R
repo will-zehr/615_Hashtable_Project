@@ -2,7 +2,6 @@ library('reticulate')
 library(hash)
 library(Matrix)
 use_python("/usr/local/bin/python")
-setwd('~')
 source_python('hash_matrix.py',convert=F)
 
 
