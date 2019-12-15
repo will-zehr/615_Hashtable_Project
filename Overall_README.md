@@ -55,6 +55,11 @@ Outputs 9 tables:
 
 #### step 3: parse & plot output files
 ```R
+library('gridExtra')
+library('grid')
+library('ggplot2')
+library('dplyr')
+library('reshape2')
 x<-scan('~/sample_sizes.txt')
 x<-x/1e14
 
