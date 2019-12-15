@@ -71,7 +71,7 @@ hash_py_to_r=function(h){
 }
 ```
 
-#Step 2: Read in command args
+# Step 2: Read in command args
 
 Want full dimension size, how many nonzero elements to sample
 
@@ -81,7 +81,7 @@ k_full=as.numeric(args[1])
 k_sample=as.numeric(scan(args[2]))
 ```
 
-#Step 3: Set up evaluation functions
+# Step 3: Set up evaluation functions
 
 ```R
 hash_time=function(m){
@@ -119,7 +119,13 @@ sparse_time2=function(m){
   return(c('time'=time.taken,'size'=size))
 }
 ```
+
 # Step 4: Run under each scenario
+
+Using sapply
+
+### Scenario 1: Random i, j 
+
 ```R
 i=sample(1:k_full,max(k_sample))
 j=sample(1:k_full,max(k_sample))
@@ -149,7 +155,10 @@ write.table(sparse_times_random2, file='sparse_times_random_dcg.tsv', sep='\t')
 
 cat('random tables written\n')
 
+```
+### Scenario 2: Diagnoal 
 
+```R
 cat('-----------------\n')
 cat('Diagonal running\n')
 cat('-----------------\n')
@@ -177,7 +186,10 @@ write.table(hash_times_diag, file='hash_times_diag_dgt.tsv', sep='\t')
 write.table(sparse_times_diag1, file='sparse_times_diag_dgt.tsv', sep='\t')
 write.table(sparse_times_diag2, file='sparse_times_diag_dcg.tsv', sep='\t')
 cat('diagonal tables written\n')
+```
+### Scenario 3: Square-in-the-Middle
 
+```R
 
 cat('----------------------------\n')
 cat('Square in the middle running\n')
