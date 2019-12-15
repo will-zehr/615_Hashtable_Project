@@ -46,13 +46,18 @@ R --slave --args 1e7 sample_sizes.txt < time_comparison.R
 Outputs 9 tables: 
 
 time/space information for hash tables methods:
+
 hash_times_diag.tsv, hash_times_random.tsv, hash_times_square.tsv;
 
+
 time/space information for column-supressed methods:
+
 sparse_times_diag_dcg.tsv, sparse_times_random_dcg.tsv, sparse_times_square.dcg.tsv;
 
 time/space information for triplet methods:
-sparse_times_diag_dgt.tsv, sparse_times_random_dgt.tsv, sparse_times_square.dgt.tsv;
+
+sparse_times_diag_dgt.tsv, sparse_times_random_dgt.tsv, sparse_times_square.dgt.tsv
+
 
 #### step 3: parse & plot output files
 ```R
