@@ -50,6 +50,7 @@ multiply_hash=function(h1,h2, convert_to_r=FALSE){ #h1 = h2
   return(h_mult)
 }
 
+
 hash_py_to_r=function(h){
   h=py_to_r(h)
   h=unlist(h)
@@ -67,31 +68,11 @@ hash_py_to_r=function(h){
   return(h)
 }
 
-# i=sample(1:10,5)
-# j=sample(1:10,5)
-# x=rnorm(5,mean=3,sd=7)
-# dime=c(10,10)
-# 
-# h=hash_table_sparse_matrix(i=i,j=j,value=x,dime=dime)
-# h_mult=multiply_hash(h,h,convert_to_r=T)
-# h_mult
-
-
 args=commandArgs(trailingOnly=T)
-#cat(seq(1e1,1e6, by=10000), file='sample_sizes.txt')
-#cat(seq(10,5e5+10, by=10000), file='sample_sizes_2.txt')
 k_full=as.numeric(args[1])
 k_sample=as.numeric(scan(args[2]))
-#k_full=1e1
-#k_sample=10
-#m=k_sample
-#k_sample=c(5e3,1e4)
-#k_sample=seq(3e3,1e4, by=1000)
-#k_sample=seq(3e3,6e3, by=1000)
-#k_sample=c(1e5)
-#memory size
- 
-#k_sample=1e2
+
+
 i=sample(1:k_full,max(k_sample))
 j=sample(1:k_full,max(k_sample))
 x=rnorm(max(k_sample))
@@ -103,13 +84,17 @@ hash_time=function(m){
   h=multiply_hash(h,h)
   end.time <- Sys.time()
   time.taken <- end.time - start.time
-  size=object.size(h)
+  size=reticulate::py_to_r(hash_size(h))
   return(c('time'=time.taken,'size'=size))
   }
 
-sparse_time=function(m){
+sparse_time1=function(m){
+  s=new("dgTMatrix",
+        i = as.integer(i[1:m]-1),
+        j = as.integer(j[1:m]-1), 
+        x=x[1:m], 
+        Dim=as.integer(dime))
   start.time <- Sys.time()
-  s=sparseMatrix(i=i[1:m],j=j[1:m],x=x[1:m],dims=dime)
   s=s%*%s
   end.time <- Sys.time()
   time.taken <- end.time - start.time
@@ -118,6 +103,15 @@ sparse_time=function(m){
 }
 
 
+sparse_time2=function(m){
+  s=sparseMatrix(i=i[1:m],j=j[1:m],x=x[1:m],dims=dime)
+  start.time <- Sys.time()
+  s=s%*%s
+  end.time <- Sys.time()
+  time.taken <- end.time - start.time
+  size=object.size(s)
+  return(c('time'=time.taken,'size'=size))
+}
 
 
 cat('-----------------\n')
@@ -125,14 +119,17 @@ cat('Random running\n')
 cat('-----------------\n')
 hash_times_random=sapply(k_sample, hash_time)
 cat('hash done\n')
-sparse_times_random=sapply(k_sample, sparse_time)
+sparse_times_random1=sapply(k_sample, sparse_time1)
+sparse_times_random2=sapply(k_sample, sparse_time2)
 cat('sparse done\n')
 
 colnames(hash_times_random)=k_sample
-colnames(sparse_times_random)=k_sample
+colnames(sparse_times_random1)=k_sample
+colnames(sparse_times_random2)=k_sample
 
-write.table(hash_times_random, file='hash_times_random.tsv', sep='\t')
-write.table(sparse_times_random, file='sparse_times_random.tsv', sep='\t')
+write.table(hash_times_random, file='hash_times_random_dgt.tsv', sep='\t')
+write.table(sparse_times_random1, file='sparse_times_random_dgt.tsv', sep='\t')
+write.table(sparse_times_random2, file='sparse_times_random_dcg.tsv', sep='\t')
 
 cat('random tables written\n')
 
@@ -152,14 +149,17 @@ j[j<0]<-1
 
 hash_times_diag=sapply(k_sample, hash_time)
 cat('hash done\n')
-sparse_times_diag=sapply(k_sample, sparse_time)
+sparse_times_diag1=sapply(k_sample, sparse_time1)
+sparse_times_diag2=sapply(k_sample, sparse_time2)
 cat('sparse done\n')
 
 colnames(hash_times_diag)=k_sample
-colnames(sparse_times_diag)=k_sample
+colnames(sparse_times_diag1)=k_sample
+colnames(sparse_times_diag2)=k_sample
 
-write.table(hash_times_diag, file='hash_times_diag.tsv', sep='\t')
-write.table(sparse_times_diag, file='sparse_times_diag.tsv', sep='\t')
+write.table(hash_times_diag, file='hash_times_diag_dgt.tsv', sep='\t')
+write.table(sparse_times_diag1, file='sparse_times_diag_dgt.tsv', sep='\t')
+write.table(sparse_times_diag2, file='sparse_times_diag_dcg.tsv', sep='\t')
 cat('diagonal tables written\n')
 
 
@@ -172,16 +172,19 @@ j=round(rnorm(max(k_sample),mean=k_full/2, sd=1e3))
 
 hash_times_square=sapply(k_sample, hash_time)
 cat('hash done\n')
-sparse_times_square=sapply(k_sample, sparse_time)
+sparse_times_square1=sapply(k_sample, sparse_time1)
+sparse_times_square2=sapply(k_sample, sparse_time2)
 cat('sparse done\n')
 
 
 
 colnames(hash_times_square)=k_sample
-colnames(sparse_times_square)=k_sample
+colnames(sparse_times_square1)=k_sample
+colnames(sparse_times_square2)=k_sample
 
-write.table(hash_times_square, file='hash_times_square.tsv', sep='\t')
-write.table(sparse_times_square, file='sparse_times_square.tsv', sep='\t')
+write.table(hash_times_square, file='hash_times_square_dgt.tsv', sep='\t')
+write.table(sparse_times_square1, file='sparse_times_square_dgt.tsv', sep='\t')
+write.table(sparse_times_square2, file='sparse_times_square_dcg.tsv', sep='\t')
 cat('square tables written\n')
 
 
