@@ -1,6 +1,6 @@
 library('reticulate')
 use_python("/usr/local/bin/python")
-source_python("hash_matrix_transitive_closure.py",convert = F)
+source_python("transitive_closure.py",convert = F)
 source_python("convert.py",convert = F)
 
 # read in network, it have 10000 nodes and around 30000 edges
