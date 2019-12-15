@@ -45,18 +45,12 @@ R --slave --args 1e7 sample_sizes.txt < time_comparison.R
 
 Outputs 9 tables: 
 
-time/space information for hash tables methods:
-
-hash_times_diag.tsv, hash_times_random.tsv, hash_times_square.tsv;
+- **time/space information for hash tables methods:** *hash_times_diag.tsv, hash_times_random.tsv, hash_times_square.tsv
 
 
-time/space information for column-supressed methods:
+- **time/space information for column-supressed methods:** *sparse_times_diag_dcg.tsv, sparse_times_random_dcg.tsv, sparse_times_square.dcg.tsv*
 
-sparse_times_diag_dcg.tsv, sparse_times_random_dcg.tsv, sparse_times_square.dcg.tsv;
-
-time/space information for triplet methods:
-
-sparse_times_diag_dgt.tsv, sparse_times_random_dgt.tsv, sparse_times_square.dgt.tsv
+- **time/space information for triplet methods:** *sparse_times_diag_dgt.tsv, sparse_times_random_dgt.tsv, sparse_times_square.dgt.tsv*
 
 
 #### step 3: parse & plot output files
@@ -155,9 +149,6 @@ memory_plot_random<-df%>%filter(id=='size')%>%ggplot(aes(x=sparsity,y=value,colo
   labs(y='object size', x='density')+
   theme(legend.position='bottom')
 
-
-
-
 hashdf<-read.table('~/hash_times_square_dgt.tsv',header=T)
 sparsedf1<-read.table('~/sparse_times_square_dgt.tsv')
 sparsedf2<-read.table('~/sparse_times_square_dcg.tsv')
@@ -197,9 +188,6 @@ memory_plot_square<-df%>%filter(id=='size')%>%ggplot(aes(x=sparsity,y=value,colo
   theme_bw()+
   labs(y='', x='density')+
   theme(legend.position='bottom')
-
-
-
 
 
 p3 <- grid.arrange(arrangeGrob(time_plot_random + theme(legend.position="none"),
