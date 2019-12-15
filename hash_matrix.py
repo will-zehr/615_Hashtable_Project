@@ -33,6 +33,9 @@ def plus(h1,h2):
             h3[k]=copy.deepcopy(h1[k])
     return h3
 
+def hash_size(h1):
+    a=sys.getsizeof(h1)
+    return a
 
 def multiply(h1,h2):
     h3=dict()
