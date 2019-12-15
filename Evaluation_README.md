@@ -19,7 +19,7 @@ dime=c(10,10)
 #### Step 3: load python script
 ```R
 use_python("/usr/local/bin/python")
-source_python('hash_table.py')
+source_python('hash_matrix.py')
 ```
 
 
