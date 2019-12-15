@@ -40,48 +40,64 @@ cat(seq(1e1,1e5, by=1000), file='sample_sizes.txt')
 #### step 2: run command line argument
 arguments: 1) full dimension size, 2) vector file with nonzero elements
 ```console
-R --slave --args 1e8 sample_sizes.txt < hash_table.R
+R --slave --args 1e7 sample_sizes.txt < time_comparison.R
 ```
 
-Outputs 2 tables: hash_times.tsv and sparse_times.tsv
+Outputs 9 tables: 
+
+time/space information for hash tables methods:
+hash_times_diag.tsv, hash_times_random.tsv, hash_times_square.tsv;
+
+time/space information for column-supressed methods:
+sparse_times_diag_dcg.tsv, sparse_times_random_dcg.tsv, sparse_times_square.dcg.tsv;
+
+time/space information for triplet methods:
+sparse_times_diag_dgt.tsv, sparse_times_random_dgt.tsv, sparse_times_square.dgt.tsv;
 
 #### step 3: parse & plot output files
 ```R
-hashdf<-read.table('hash_times.tsv',header=T)
-sparsedf<-read.table('sparse_times.tsv')
+x<-scan('~/sample_sizes.txt')
+x<-x/1e14
 
-colnames(hashdf)=sapply(colnames(hashdf), function(i) as.numeric(str_remove(i, "X")))
-colnames(hashdf)=as.numeric(colnames(hashdf))/1e16
+hashdf<-read.table('~/hash_times_diag_dgt.tsv',header=T)
+sparsedf1<-read.table('~/sparse_times_diag_dgt.tsv')
+sparsedf2<-read.table('~/sparse_times_diag_dcg.tsv')
+
+colnames(hashdf)=x
 
 hashdf$id=rownames(hashdf)
 hashdf$method='hash'
 
+colnames(sparsedf1)=x
+colnames(sparsedf2)=x
 
-colnames(sparsedf)=sapply(colnames(sparsedf), function(i) as.numeric(str_remove(i, "X")))
-colnames(sparsedf)=as.numeric(colnames(sparsedf))/1e16
+sparsedf1$id=rownames(hashdf)
+sparsedf1$method='dgt'
+sparsedf2$id=rownames(hashdf)
+sparsedf2$method='dcg'
 
-sparsedf$id=rownames(hashdf)
-sparsedf$method='sparse'
 
+df<-rbind(melt(hashdf, id.vars=c('id','method')), 
+          melt(sparsedf1, id.vars=c('id','method')),
+          melt(sparsedf2, id.vars=c('id','method')))
 
-df<-rbind(melt(hashdf, id.vars=c('id','method')), melt(sparsedf, id.vars=c('id','method')))
-df<-df%>%rename('sparsity'='variable')
+df<-df%>%rename('sparsity'='variable')%>%mutate(sparsity=as.numeric(as.character(sparsity)))
+df<-df%>%mutate(value=ifelse(id=='size',value/1e8,value))
 
-time_plot<-df%>%filter(id=='time')%>%ggplot(aes(x=sparsity,y=value,color=method))+
-  geom_point()+
+time_plot_diag<-df%>%filter(id=='time')%>%ggplot(aes(x=sparsity,y=value,color=method))+
+  geom_point(size=.8, alpha=.6)+
   geom_line(aes(group=method))+
   theme_bw()+
-  labs(y='computation time (seconds)')+
-  ggtitle('time comparison')+
+  labs(y='',x='density')+
+  ggtitle('Diagonal Nonzero Values')+
   theme(legend.position='bottom')
 
-memory_plot<-df%>%filter(id=='size')%>%ggplot(aes(x=sparsity,y=value,color=method))+
-  geom_point()+
+memory_plot_diag<-df%>%filter(id=='size')%>%ggplot(aes(x=sparsity,y=value,color=method))+
+  geom_point(size=.8, alpha=.6)+
   geom_line(aes(group=method))+
   theme_bw()+
-  labs(y='object size (bytes)')+
-  theme(legend.position='bottom')+
-  ggtitle('memory comparison')
+  labs(y='', x='density')+
+  theme(legend.position='bottom')
 
 g_legend<-function(a.gplot){
   tmp <- ggplot_gtable(ggplot_build(a.gplot))
@@ -89,12 +105,106 @@ g_legend<-function(a.gplot){
   legend <- tmp$grobs[[leg]]
   return(legend)}
 
-mylegend<-g_legend(memory_plot)
+mylegend<-g_legend(memory_plot_diag)
 
-p3 <- grid.arrange(arrangeGrob(time_plot + theme(legend.position="none"),
-                               memory_plot + theme(legend.position="none"),
-                               nrow=1),
+
+hashdf<-read.table('~/hash_times_random_dgt.tsv',header=T)
+sparsedf1<-read.table('~/sparse_times_random_dgt.tsv')
+sparsedf2<-read.table('~/sparse_times_random_dcg.tsv')
+
+
+colnames(hashdf)=x
+
+hashdf$id=rownames(hashdf)
+hashdf$method='hash'
+
+colnames(sparsedf1)=x
+colnames(sparsedf2)=x
+
+sparsedf1$id=rownames(hashdf)
+sparsedf1$method='dgt'
+sparsedf2$id=rownames(hashdf)
+sparsedf2$method='dcg'
+
+
+df<-rbind(melt(hashdf, id.vars=c('id','method')), 
+          melt(sparsedf1, id.vars=c('id','method')),
+          melt(sparsedf2, id.vars=c('id','method')))
+
+df<-df%>%rename('sparsity'='variable')%>%mutate(sparsity=as.numeric(as.character(sparsity)))
+df<-df%>%mutate(value=ifelse(id=='size',value/1e8,value))
+
+
+time_plot_random<-df%>%filter(id=='time')%>%ggplot(aes(x=sparsity,y=value,color=method))+
+  geom_point(size=.8, alpha=.6)+
+  geom_line(aes(group=method))+
+  theme_bw()+
+  labs(y='time (seconds)',x='density')+
+  ggtitle('Random Nonzero Values')+
+  theme(legend.position='bottom')
+
+memory_plot_random<-df%>%filter(id=='size')%>%ggplot(aes(x=sparsity,y=value,color=method))+
+  geom_point(size=.8, alpha=.6)+
+  geom_line(aes(group=method))+
+  theme_bw()+
+  labs(y='object size', x='density')+
+  theme(legend.position='bottom')
+
+
+
+
+hashdf<-read.table('~/hash_times_square_dgt.tsv',header=T)
+sparsedf1<-read.table('~/sparse_times_square_dgt.tsv')
+sparsedf2<-read.table('~/sparse_times_square_dcg.tsv')
+
+colnames(hashdf)=x
+
+hashdf$id=rownames(hashdf)
+hashdf$method='hash'
+
+colnames(sparsedf1)=x
+colnames(sparsedf2)=x
+
+sparsedf1$id=rownames(hashdf)
+sparsedf1$method='dgt'
+sparsedf2$id=rownames(hashdf)
+sparsedf2$method='dcg'
+
+
+df<-rbind(melt(hashdf, id.vars=c('id','method')), 
+          melt(sparsedf1, id.vars=c('id','method')),
+          melt(sparsedf2, id.vars=c('id','method')))
+
+df<-df%>%rename('sparsity'='variable')%>%mutate(sparsity=as.numeric(as.character(sparsity)))
+df<-df%>%mutate(value=ifelse(id=='size',value/1e8,value))
+
+time_plot_square<-df%>%filter(id=='time')%>%ggplot(aes(x=sparsity,y=value,color=method))+
+  geom_point(size=.8, alpha=.6)+
+  geom_line(aes(group=method))+
+  theme_bw()+
+  labs(y='',x='density')+
+  ggtitle('Square Nonzero Values')+
+  theme(legend.position='bottom')
+
+memory_plot_square<-df%>%filter(id=='size')%>%ggplot(aes(x=sparsity,y=value,color=method))+
+  geom_point(size=.8, alpha=.6)+
+  geom_line(aes(group=method))+
+  theme_bw()+
+  labs(y='', x='density')+
+  theme(legend.position='bottom')
+
+
+
+
+
+p3 <- grid.arrange(arrangeGrob(time_plot_random + theme(legend.position="none"),
+                               time_plot_diag + theme(legend.position="none"),
+                               time_plot_square + theme(legend.position="none"),
+                               memory_plot_random + theme(legend.position="none"),
+                               memory_plot_diag + theme(legend.position="none"),
+                               memory_plot_square + theme(legend.position="none"),
+                               nrow=2),
                    mylegend, nrow=2,heights=c(8, 1))
 
-ggsave(p3, file='grid_plots.png', height=6, width=11)
+ggsave(p3, file='~/grid_plots_diagonal.png', height=6, width=9)
 ```
