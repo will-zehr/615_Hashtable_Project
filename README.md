@@ -7,7 +7,7 @@ Implementing a sparse hash table matrix design
 	library('reticulate')
 	use_python("/usr/local/bin/python")
 	source_python("hash_matrix.py",convert = F)
-	source_python("hash_matrix_transitive_closure.py",convert = F)
+	source_python("transitive_closure.py",convert = F)
 	source_python("convert.py",convert = F)
 ```
 
